@@ -1,0 +1,89 @@
+
+
+ 
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<!--[if IE]>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<![endif]-->
+<title>Charts</title>
+<link rel="stylesheet" href="http://tenxer.github.io/xcharts/css/master.css">
+<script src="http://tenxer.github.io/xcharts/js/d3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://tenxer.github.io/xcharts/js/xcharts.min.js"></script>
+<script src="http://tenxer.github.io/xcharts/js/rainbow.min.js"></script>
+<script>
+data = {
+  "xScale": "ordinal",
+  "yScale": "linear",
+  "type": "line",
+  "main": [
+
+  ],
+  "comp": [
+
+    {
+      "className": ".comment",
+      "type": "line-dotted",
+      "data": 
+      <%= @comment %>
+      
+    },
+    {
+      "className": ".coin",
+      "type": "line-dotted",
+      "data": 
+      <%= @coin %>
+      
+    },
+    {
+      "className": ".title",
+      "type": "line-dotted",
+      "data": 
+      <%= @title %>
+      
+    },
+    {
+      "className": ".fav",
+      "type": "line-dotted",
+      "data": 
+      <%= @fav %>
+      
+    },
+    {
+      "className": ".soc",
+      "type": "line-dotted",
+      "data": 
+      <%= @soc %>
+      
+    }
+  ]
+}
+data1 = {
+  "xScale": "ordinal",
+  "yScale": "linear",
+  "type": "line",
+  "main": [
+    {
+      "className": ".play",
+      "data": 
+      <%= @play %>
+    }
+  ]
+}
+$("document").ready(function(){
+  var myChart = new xChart('bar', data, '#myChart');
+  var playChart = new xChart('bar', data1, '#playChart');
+});
+</script>
+</head>
+<body class="">
+  <p>橙色弹幕 紫色得分 绿色硬币 蓝色评论 红色收藏</p>
+  <figure style="width: 100%; height: 720px;" id="myChart"></figure>
+  <p>播放量</p>
+  <figure style="width: 100%; height: 720px;" id="playChart"></figure>
+</body>
+</html>

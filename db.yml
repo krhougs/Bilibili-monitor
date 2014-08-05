@@ -1,0 +1,6 @@
+development:
+  sessions:
+    default:
+      database: bili
+      hosts:
+        - localhost:27017
