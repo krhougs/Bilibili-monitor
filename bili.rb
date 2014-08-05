@@ -9,14 +9,7 @@ require "open-uri"
 $appkey = "af999dd030914b02"
 $app_secret = "53fbcaa8b938f3f85979967d3fca0b4c"
 
-puts "输入av号："
-$avno =( gets ).to_i
-puts "你的av号是：" + $avno.to_s + "如果输错了请按Ctrl+C退出程序"
 
-puts "输入抓取时间间隔(ms)："
-$time =( gets ).to_i
-puts "你的抓取时间间隔：" + $time.to_s + "如果输错了请按Ctrl+C退出程序"
-puts "开始工作了喵"
 
 Mongoid.load!("./db.yml", :development)
 
@@ -71,7 +64,7 @@ class Page
 	end
 end
 
-time = 300
+$time = 300
 threads = []
 
 class WS < Sinatra::Base
@@ -108,18 +101,5 @@ class WS < Sinatra::Base
 		erb :chart
 	end
 end
-
-threads << Thread.new do
-	WS.run!
-end
-
-loop do 
-  threads << Thread.new do
-    Page.fetch $avno
-  end
-  sleep $time
-end
-threads.each { |t|t.join  }  
-
 
 
