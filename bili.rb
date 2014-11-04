@@ -5,6 +5,7 @@ require "mongoid"
 require "json"
 require "sinatra/base"
 require "open-uri"
+require 'celluloid/autostart'
 
 $appkey = "af999dd030914b02"
 $app_secret = "53fbcaa8b938f3f85979967d3fca0b4c"
@@ -22,11 +23,11 @@ class D
 	field :coin
 	field :title
 	field :fav
-	field :soc
 	field :avno
 end
 
 class Page
+	include Celluloid
     def self.get_sign key, pa
         m_data = []
         pa = pa.sort
@@ -36,8 +37,8 @@ class Page
         m_sign = m_data.join('&')
         {'sign' => Digest::MD5.hexdigest(m_sign + key).downcase, 'params' => m_sign}
     end
-	def self.fetch av
-		key_pair = self.get_sign $app_secret , {
+	def fetch av
+		key_pair = Page.get_sign $app_secret , {
 			:appkey => $appkey,
 			:ts => Time.new.to_i,
 			:id => av,
@@ -52,7 +53,6 @@ class Page
 			coin: j["coins"].to_i,
 			title: j["video_review"].to_i,
 			fav: j["favorites"].to_i,
-			soc: j["credit"].to_i,
 			avno: $avno
 			)
 		begin
@@ -60,7 +60,7 @@ class Page
 		rescue 
 			@d.save
 		end
-		puts "Fetched..." + @d.created_at
+		puts "Fetched..." + @d.created_at.to_s
 	end
 end
 
@@ -71,9 +71,9 @@ class WS < Sinatra::Base
 	get "/" do 
 		t = []
 		D.where(avno: $avno).each do |d|
-			t<<"<tr><td>#{d.created_at.to_s}</td><td>#{d.play.to_s}</td><td>#{d.comment.to_s}</td><td>#{d.coin.to_s}</td><td>#{d.title.to_s}</td><td>#{d.fav.to_s}</td><td>#{d.soc.to_s}</td></tr>"
+			t<<"<tr><td>#{d.created_at.to_s}</td><td>#{d.play.to_s}</td><td>#{d.comment.to_s}</td><td>#{d.coin.to_s}</td><td>#{d.title.to_s}</td><td>#{d.fav.to_s}</td></tr>"
 		end
-		a = "<tr><td>时间</td><td>播放数</td><td>评论数</td><td>硬币数</td><td>弹幕数</td><td>收藏数</td><td>积分数</td></tr>"
+		a = "<tr><td>时间</td><td>播放数</td><td>评论数</td><td>硬币数</td><td>弹幕数</td><td>收藏数</td></tr>"
 		"<table>#{a + t.join}</table>"
 	end
 	get "/chart" do 
@@ -89,15 +89,12 @@ class WS < Sinatra::Base
 			@coin<<{:x => d.created_at.strftime("%m.%d %H:%M"), :y => d.coin.to_i}
 			@title<<{:x => d.created_at.strftime("%m.%d %H:%M"), :y => d.title.to_i}
 			@fav<<{:x => d.created_at.strftime("%m.%d %H:%M"), :y => d.fav.to_i}
-			@soc<<{:x => d.created_at.strftime("%m.%d %H:%M"), :y => d.soc.to_i}
 		end
 		@play = @play.to_json
 		@comment = @comment.to_json
 		@coin = @coin.to_json
 		@title = @title.to_json
 		@fav = @fav.to_json
-		@soc = @soc.to_json
-
 		erb :chart
 	end
 end
